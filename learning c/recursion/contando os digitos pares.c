@@ -1,3 +1,5 @@
+/* question link: https://www.thehuxley.com/problem/405 */
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>

@@ -1,5 +1,5 @@
 /* resolution of question number 51
-link: https://www.thehuxley.com/problem/51?quizId=8833 */
+link: https://www.thehuxley.com/problem/51 */
 
 #include <stdio.h>
 #include <string.h>

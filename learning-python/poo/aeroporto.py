@@ -37,6 +37,7 @@ class passageiro:
 
     def ver_data_nasc(self):
         return self.__nasc == self.__p_nasc
+        
 def verificar_passagens(passageiros):
     for p in passageiros:
         if not p.ver_rg():

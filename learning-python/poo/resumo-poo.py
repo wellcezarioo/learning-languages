@@ -1,7 +1,7 @@
 # Programação orientada a objetos
 
 # visibilidade:
-"""visibilidade, em uml são representadas por +, - e #
+"""visibilidade, em uml, são representadas por +, - e #
 +: público, todos podem mexer
 -: privado, só eu (a classe) posso mexer
 #: protegido, só a mãe ( a classe) e os seus filhos (subclasses) podem mexer"""

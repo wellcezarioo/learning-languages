@@ -2,11 +2,11 @@ package Aplication;
 
 import java.util.ArrayList;
 
-class Product {
+class Product2 {
     private String brand;
     private double price;
 
-    public Product(String brand, double price) {
+    public Product2(String brand, double price) {
         this.brand = brand;
         this.price = price;
     }
@@ -24,12 +24,12 @@ class Product {
     }
 }
 
-class ShoppingCart {
+class Cart2 {
     private int costumerId;
     private ArrayList<Product> productList;
 
 
-    public ShoppingCart(int costumerId) {
+    public Cart2(int costumerId) {
         this.costumerId = costumerId;
         this.productList = new ArrayList<Product>();
     }
@@ -119,14 +119,14 @@ class Stove extends Product{
     }
 }
 
-public class Supermarket {
+public class ShoppingCart2 {
 
     public static void main(String[] args) {
         Tv s25t = new Tv("Samsung", 500, 32);
         Refrigerator e12 = new Refrigerator("Eletrolux", 750, 12);
         Stove f21 = new Stove("Eletrolux", 500, 7);
 
-        ShoppingCart myCart = new ShoppingCart(1);
+        Cart2 myCart = new Cart2(1);
         myCart.addProduct(s25t);
         myCart.addProduct(e12);
         myCart.addProduct(f21);

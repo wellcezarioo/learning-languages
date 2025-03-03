@@ -24,12 +24,12 @@ class Product {
     }
 }
 
-class ShoppingCart {
+class Cart {
     private int costumerId;
     private ArrayList<Product> productList;
 
 
-    public ShoppingCart(int costumerId) {
+    public Cart(int costumerId) {
         this.costumerId = costumerId;
         this.productList = new ArrayList<Product>();
     }
@@ -80,14 +80,14 @@ class ShoppingCart {
     }
 }
 
-public class Supermarket {
+public class ShoppingCart {
 
     public static void main(String[] args) {
         Product cheese = new Product("Cheese", 5);
         Product strawberry = new Product("Strawberry", 2.5);
         Product pen = new Product("Pen", 1);
 
-        ShoppingCart myCart = new ShoppingCart(1);
+        Cart myCart = new Cart(1);
         myCart.addProduct(cheese);
         myCart.addProduct(strawberry);
         myCart.addProduct(pen);

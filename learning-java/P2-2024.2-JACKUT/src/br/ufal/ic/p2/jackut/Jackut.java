@@ -1,6 +1,5 @@
 package br.ufal.ic.p2.jackut;
 
-import br.ufal.ic.p2.jackut.exceptions.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,36 +11,35 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Responsável pela lógica de negócio do sistema, gerenciando usuários e sessões.
+ * Classe responsável pela lógica de negócio do sistema Jackut.
+ * Gerencia os usuários, sessões de login, e interações entre usuários, adição de amigos, envio de recados,
+ * e a manipulação de atributos de perfil. Além disso, gerencia a persistência dos dados em um arquivo.
  */
 public class Jackut implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Mapa de login -> Usuario
-    private Map<String, Usuario> usuarios;
+    private Map<String, Usuario> usuarios;  // Mapa de login -> Usuario
+    private transient Map<String, String> sessoes;  // Mapa de sessaoId -> login
+    private static final String ARQ_PERSISTENCIA = "jackut.dat";  // Arquivo de persistência
 
-    // Mapa de sessaoId -> login (não persistimos sessões, pois está transient)
-    private transient Map<String, String> sessoes;
-
-    // Arquivo de persistência
-    private static final String ARQ_PERSISTENCIA = "jackut.dat";
-
+    /**
+     * Construtor da classe Jackut.
+     * Tenta carregar os dados persistidos a partir de um arquivo, se existir.
+     * Caso contrário, inicializa as coleções de usuários e sessões.
+     */
     public Jackut() {
-        // Tenta carregar os dados do arquivo, se existir
         carregarDadosDoArquivo();
         if (this.usuarios == null) {
             this.usuarios = new HashMap<>();
         }
-        // Sessões sempre iniciam vazias a cada execução
         this.sessoes = new HashMap<>();
     }
 
-    // -------------------------------------------------
-    //  Métodos principais (User Stories 1 a 4)
-    // -------------------------------------------------
+    //  Métodos principais
 
     /**
-     * Zera o sistema em memória (usado em testes).
+     * Zera os dados do sistema em memória. Usado principalmente em testes.
+     * Limpa as listas de usuários e sessões.
      */
     public void zerarSistema() {
         usuarios.clear();
@@ -51,8 +49,15 @@ public class Jackut implements Serializable {
     }
 
     /**
-     * Cria um usuário, verificando regras de login e senha.
-     * User Story 1
+     * Cria um novo usuário no sistema, verificando as regras de login e senha.
+     * Lança exceções caso o login, senha ou nome sejam inválidos ou se o login já estiver em uso.
+     *
+     * @param login O login do novo usuário.
+     * @param senha A senha do novo usuário.
+     * @param nome O nome do novo usuário.
+     * @throws LoginInvalidoException Se o login for inválido.
+     * @throws SenhaInvalidaException Se a senha for inválida.
+     * @throws ContaComEsseNomeJaExisteException Se já existir uma conta com o mesmo login.
      */
     public void criarUsuario(String login, String senha, String nome) {
         if (login == null || login.trim().isEmpty()) {
@@ -72,13 +77,17 @@ public class Jackut implements Serializable {
     }
 
     /**
-     * Abre uma sessão, retornando um ID.
-     * Se login ou senha forem vazios, ou se não baterem, lança "Login ou senha inválidos."
-     * User Story 1
+     * Abre uma sessão para o usuário, verificando login e senha.
+     * Retorna um ID de sessão único se as credenciais estiverem corretas.
+     * Lança exceção se o login ou senha estiverem inválidos.
+     *
+     * @param login O login do usuário.
+     * @param senha A senha do usuário.
+     * @return Um ID único de sessão.
+     * @throws LoginOuSenhaInvalidosException Se o login ou senha estiverem incorretos.
      */
     public String abrirSessao(String login, String senha) {
-        if (login == null || login.trim().isEmpty() ||
-                senha == null || senha.trim().isEmpty()) {
+        if (login == null || login.trim().isEmpty() || senha == null || senha.trim().isEmpty()) {
             throw new LoginOuSenhaInvalidosException();
         }
         Usuario usuario = usuarios.get(login);
@@ -92,95 +101,109 @@ public class Jackut implements Serializable {
 
     /**
      * Retorna o valor de um atributo do usuário especificado.
-     * Lança "Usuário não cadastrado." se não existe login.
-     * User Story 1, 2
+     * Lança "Usuário não cadastrado" se o login não for encontrado.
+     *
+     * @param login O login do usuário.
+     * @param atributo O atributo desejado.
+     * @return O valor do atributo.
+     * @throws UsuarioNaoCadastradoException Se o usuário não estiver cadastrado.
+     * @throws AtributoNaoPreenchidoException Se o atributo não estiver preenchido.
      */
     public String getAtributoUsuario(String login, String atributo) {
         Usuario usuario = usuarios.get(login);
         if (usuario == null) {
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
-        // Se o atributo não existir, o próprio usuario.getAtributo lança AtributoNaoPreenchidoException
         return usuario.getAtributo(atributo);
     }
 
     /**
-     * Edita (ou cria) um atributo do perfil, se a sessão pertencer ao usuário.
-     * Lança "Usuário não cadastrado." se a sessãoId for inválida.
-     * User Story 2
+     * Edita (ou cria) um atributo do perfil do usuário com base na sessão ativa.
+     * Lança "Usuário não cadastrado" se a sessão for inválida.
+     *
+     * @param sessaoId O ID da sessão do usuário.
+     * @param atributo O atributo a ser editado.
+     * @param valor O novo valor do atributo.
+     * @throws UsuarioNaoCadastradoException Se a sessão não for válida ou o usuário não estiver cadastrado.
      */
     public void editarPerfil(String sessaoId, String atributo, String valor) {
         String login = sessoes.get(sessaoId);
         if (login == null) {
-            // O script espera "Usuário não cadastrado." se a sessão é inválida
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         Usuario usuario = usuarios.get(login);
         if (usuario == null) {
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         usuario.editarAtributo(atributo, valor);
     }
 
     /**
-     * Adiciona um amigo (envia convite ou, se já houver convite inverso, confirma amizade).
-     * Lança erros conforme user story 3.
+     * Adiciona um amigo ao usuário, enviando um convite ou confirmando amizade, dependendo do caso.
+     * Lança erros conforme os requisitos da User Story 3.
+     *
+     * @param sessaoId O ID da sessão do usuário que está adicionando o amigo.
+     * @param amigo O login do amigo a ser adicionado.
+     * @throws UsuarioNaoCadastradoException Se a sessão for inválida ou o usuário não estiver cadastrado.
+     * @throws UsuarioNaoPodeAdicionarASiMesmoException Se o usuário tentar adicionar a si mesmo como amigo.
+     * @throws UsuarioJaEstaAdicionadoEsperandoException Se o amigo já estiver esperando aceitação do convite.
+     * @throws UsuarioJaEstaAdicionadoException Se o amigo já estiver adicionado como amigo.
      */
     public void adicionarAmigo(String sessaoId, String amigo) {
         String loginSolicitante = sessoes.get(sessaoId);
         if (loginSolicitante == null) {
-            // Se a sessão é inválida, o script espera "Usuário não cadastrado."
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         if (loginSolicitante.equals(amigo)) {
-            // "Usuário não pode adicionar a si mesmo como amigo."
-            throw new UsuarioNaoPodeAdicionarASiMesmoException();
+            throw new UsuarioNaoPodeAdicionarASiMesmoException(); // "Usuário não pode adicionar a si mesmo como amigo."
         }
         Usuario solicitante = usuarios.get(loginSolicitante);
         Usuario usuarioAlvo = usuarios.get(amigo);
         if (usuarioAlvo == null) {
             throw new UsuarioNaoCadastradoException();
         }
-        // 1) Se já são amigos, "Usuário já está adicionado como amigo."
         if (solicitante.ehAmigo(amigo)) {
-            throw new UsuarioJaEstaAdicionadoException();
+            throw new UsuarioJaEstaAdicionadoException(); // "Usuário já está adicionado como amigo."
         }
-        // 2) Se o alvo tem convite de mim,
-        //    "Usuário já está adicionado como amigo, esperando aceitação do convite."
         if (usuarioAlvo.temConvite(loginSolicitante)) {
-            throw new UsuarioJaEstaAdicionadoEsperandoException();
+            throw new UsuarioJaEstaAdicionadoEsperandoException(); // "Usuário já está adicionado como amigo, esperando aceitação do convite."
         }
-        // 3) Se eu tenho convite do alvo, então confirmamos amizade
         if (solicitante.temConvite(amigo)) {
             solicitante.removerConvite(amigo);
             solicitante.confirmarAmizade(amigo);
             usuarioAlvo.confirmarAmizade(loginSolicitante);
             return;
         }
-        // 4) Caso contrário, envio convite
         usuarioAlvo.adicionarConvite(loginSolicitante);
     }
 
     /**
-     * Retorna true se login e amigo são amigos.
-     * Lança "Usuário não cadastrado." se login não existe.
+     * Verifica se dois usuários são amigos.
+     *
+     * @param login O login do usuário.
+     * @param amigo O login do amigo a ser verificado.
+     * @return Retorna true se os usuários forem amigos, caso contrário, false.
+     * @throws UsuarioNaoCadastradoException Se o login não estiver cadastrado.
      */
     public boolean ehAmigo(String login, String amigo) {
         Usuario usuario = usuarios.get(login);
         if (usuario == null) {
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         return usuario.ehAmigo(amigo);
     }
 
     /**
-     * Retorna os amigos do usuário em formato {amigo1,amigo2}.
-     * Lança "Usuário não cadastrado." se login não existe.
+     * Retorna os amigos de um usuário no formato de conjunto {amigo1, amigo2}.
+     *
+     * @param login O login do usuário.
+     * @return A lista de amigos do usuário no formato de conjunto.
+     * @throws UsuarioNaoCadastradoException Se o login não estiver cadastrado.
      */
     public String getAmigos(String login) {
         Usuario usuario = usuarios.get(login);
         if (usuario == null) {
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         var lista = usuario.getAmigos();
         StringBuilder sb = new StringBuilder();
@@ -196,20 +219,22 @@ public class Jackut implements Serializable {
     }
 
     /**
-     * Envia um recado de quem está na sessão para 'destinatario'.
-     * Lança "Sessão inválida." ou "Usuário não cadastrado." ou "Usuário não pode enviar recado para si mesmo."
+     * Envia um recado de um usuário para outro destinatário.
+     * Lança exceções apropriadas caso a sessão seja inválida ou o usuário tente enviar um recado para si mesmo.
+     *
+     * @param sessaoId O ID da sessão do usuário que está enviando o recado.
+     * @param destinatario O login do destinatário.
+     * @param recado O conteúdo do recado.
+     * @throws UsuarioNaoCadastradoException Se o destinatário não estiver cadastrado.
+     * @throws UsuarioNaoPodeEnviarRecadoParaSiMesmoException Se o usuário tentar enviar um recado para si mesmo.
      */
     public void enviarRecado(String sessaoId, String destinatario, String recado) {
         String login = sessoes.get(sessaoId);
         if (login == null) {
-            // Pelos testes, "Sessão inválida." ou "Usuário não cadastrado."?
-            // O código original usava "Sessão inválida."
-            // Mas os scripts de teste usam "Usuário não cadastrado." quando a sessão é inválida.
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         if (login.equals(destinatario)) {
-            // "Usuário não pode enviar recado para si mesmo."
-            throw new UsuarioNaoPodeEnviarRecadoParaSiMesmoException();
+            throw new UsuarioNaoPodeEnviarRecadoParaSiMesmoException(); // "Usuário não pode enviar recado para si mesmo."
         }
         Usuario userDest = usuarios.get(destinatario);
         if (userDest == null) {
@@ -219,28 +244,32 @@ public class Jackut implements Serializable {
     }
 
     /**
-     * Lê o primeiro recado do usuário (dono da sessão).
-     * Lança "Sessão inválida." ou "Usuário não cadastrado." ou "Não há recados."
+     * Lê o primeiro recado da fila de recados do usuário.
+     * Lança exceções apropriadas se a sessão for inválida ou se não houver recados.
+     *
+     * @param sessaoId O ID da sessão do usuário.
+     * @return O conteúdo do primeiro recado.
+     * @throws UsuarioNaoCadastradoException Se o login não estiver cadastrado.
+     * @throws NaoHaRecadosException Se não houver recados na fila.
      */
     public String lerRecado(String sessaoId) {
         String login = sessoes.get(sessaoId);
         if (login == null) {
-            // De novo, substituímos por "Usuário não cadastrado." para bater com o script.
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         Usuario usuario = usuarios.get(login);
         if (usuario == null) {
-            throw new UsuarioNaoCadastradoException();
+            throw new UsuarioNaoCadastradoException(); // "Usuário não cadastrado."
         }
         String recado = usuario.lerRecado();
         if (recado == null) {
-            throw new NaoHaRecadosException();
+            throw new NaoHaRecadosException(); // "Não há recados."
         }
         return recado;
     }
 
     /**
-     * Encerra o sistema, salvando os dados em arquivo e limpando as sessões.
+     * Encerra o sistema, salvando os dados no arquivo e limpando as sessões.
      */
     public void encerrarSistema() {
         salvarDadosNoArquivo();
@@ -249,12 +278,11 @@ public class Jackut implements Serializable {
         }
     }
 
-    // -------------------------------------------------
     //  Métodos privados de persistência
-    // -------------------------------------------------
 
     /**
-     * Carrega dados do arquivo (se existir).
+     * Carrega os dados do arquivo de persistência, se existir.
+     * Caso o arquivo esteja corrompido ou não exista, os dados do sistema são carregados como vazios.
      */
     private void carregarDadosDoArquivo() {
         File f = new File(ARQ_PERSISTENCIA);
@@ -269,7 +297,7 @@ public class Jackut implements Serializable {
     }
 
     /**
-     * Salva dados no arquivo `jackut.dat`.
+     * Salva os dados do sistema no arquivo de persistência `jackut.dat`.
      */
     private void salvarDadosNoArquivo() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(ARQ_PERSISTENCIA))) {

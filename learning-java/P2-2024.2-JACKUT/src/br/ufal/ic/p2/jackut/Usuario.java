@@ -1,18 +1,11 @@
 package br.ufal.ic.p2.jackut;
 
-import br.ufal.ic.p2.jackut.exceptions.AtributoNaoPreenchidoException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Representa um usuário no sistema Jackut.
+ * Classe que representa um usuário no sistema Jackut.
+ * Gerencia informações como login, senha, nome, atributos de perfil, amigos, recados e convites pendentes.
  */
 public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -22,9 +15,17 @@ public class Usuario implements Serializable {
     private String nome;
     private List<String> amigos;
     private Queue<String> recados;
-    private Map<String, String> atributos;           // Atributos arbitrários (descricao, estadoCivil, etc.)
-    private Set<String> convitesPendentes;          // Convites de amizade pendentes (logins de quem enviou)
+    private Map<String, String> atributos;
+    private Set<String> convitesPendentes;
 
+    /**
+     * Construtor da classe Usuario.
+     * Inicializa o usuário com um login, senha e nome.
+     *
+     * @param login O login do usuário.
+     * @param senha A senha do usuário.
+     * @param nome O nome do usuário.
+     */
     public Usuario(String login, String senha, String nome) {
         this.login = login;
         this.senha = senha;
@@ -35,33 +36,24 @@ public class Usuario implements Serializable {
         this.convitesPendentes = new HashSet<>();
     }
 
-    public String getLogin() {
-        return login;
-    }
-
     /**
-     * Verifica se a senha fornecida confere com a senha deste usuário.
+     * Verifica se a senha fornecida é válida para este usuário.
+     *
+     * @param senha A senha a ser verificada.
+     * @return Retorna true se a senha for válida, caso contrário, false.
      */
     public boolean verificarSenha(String senha) {
         return this.senha.equals(senha);
     }
 
     /**
-     * Retorna o nome do usuário (é um atributo especial que sempre existe).
-     */
-    public String getNome() {
-        return nome;
-    }
-
-    /**
-     * Cria ou edita um atributo do perfil.
-     * Caso desejasse permitir editar o próprio 'nome', bastaria checar se atributo é "nome".
+     * Edita ou cria um atributo no perfil do usuário.
+     *
+     * @param atributo O nome do atributo.
+     * @param valor O valor do atributo.
      */
     public void editarAtributo(String atributo, String valor) {
         if ("nome".equals(atributo)) {
-            // Se quiser permitir editar o nome, bastaria: this.nome = valor;
-            // Mas, pelas user stories, "nome" é definido no construtor e não costuma mudar.
-            // Caso não deseje permitir, simplesmente ignore ou trate de outra forma.
             this.nome = valor;
         } else {
             atributos.put(atributo, valor);
@@ -69,9 +61,11 @@ public class Usuario implements Serializable {
     }
 
     /**
-     * Retorna o valor de um atributo do perfil.
-     * Se o atributo for "nome", retorna o nome.
-     * Se não estiver definido (e não for "nome"), lança AtributoNaoPreenchidoException.
+     * Obtém o valor de um atributo do perfil do usuário.
+     *
+     * @param atributo O nome do atributo.
+     * @return O valor do atributo.
+     * @throws AtributoNaoPreenchidoException Se o atributo solicitado não foi preenchido.
      */
     public String getAtributo(String atributo) {
         if ("nome".equals(atributo)) {
@@ -80,20 +74,23 @@ public class Usuario implements Serializable {
         if (atributos.containsKey(atributo)) {
             return atributos.get(atributo);
         }
-        throw new AtributoNaoPreenchidoException(); // "Atributo não preenchido."
+        throw new AtributoNaoPreenchidoException();
     }
 
-    // --------------------- Métodos de amizade ------------------------
-
     /**
-     * Verifica se 'amigo' está na lista de amigos deste usuário.
+     * Verifica se o usuário é amigo de outro usuário.
+     *
+     * @param amigo O login do outro usuário.
+     * @return Retorna true se o usuário for amigo do outro, caso contrário, false.
      */
     public boolean ehAmigo(String amigo) {
         return amigos.contains(amigo);
     }
 
     /**
-     * Confirma a amizade com outro usuário (adicionando-o aos amigos).
+     * Adiciona um amigo à lista de amigos do usuário.
+     *
+     * @param amigo O login do amigo a ser adicionado.
      */
     public void confirmarAmizade(String amigo) {
         if (!amigos.contains(amigo)) {
@@ -101,37 +98,58 @@ public class Usuario implements Serializable {
         }
     }
 
+    /**
+     * Retorna a lista de amigos do usuário.
+     *
+     * @return A lista de amigos do usuário.
+     */
     public List<String> getAmigos() {
         return amigos;
     }
 
-    // --------------------- Métodos de convites -----------------------
-
+    /**
+     * Adiciona um convite de amizade à lista de convites pendentes do usuário.
+     *
+     * @param deUsuario O login do usuário que enviou o convite.
+     */
     public void adicionarConvite(String deUsuario) {
         convitesPendentes.add(deUsuario);
     }
 
+    /**
+     * Remove um convite de amizade da lista de convites pendentes do usuário.
+     *
+     * @param deUsuario O login do usuário que enviou o convite.
+     */
     public void removerConvite(String deUsuario) {
         convitesPendentes.remove(deUsuario);
     }
 
+    /**
+     * Verifica se o usuário tem um convite pendente de outro usuário.
+     *
+     * @param deUsuario O login do usuário que enviou o convite.
+     * @return Retorna true se o convite estiver pendente, caso contrário, false.
+     */
     public boolean temConvite(String deUsuario) {
         return convitesPendentes.contains(deUsuario);
     }
 
-    // --------------------- Métodos de recados ------------------------
-
     /**
-     * Adiciona um recado à fila do usuário.
+     * Adiciona um recado à fila de recados do usuário.
+     *
+     * @param mensagem O conteúdo do recado.
      */
     public void receberRecado(String mensagem) {
         recados.add(mensagem);
     }
 
     /**
-     * Retorna (e remove) o primeiro recado da fila ou null se não houver.
+     * Retorna e remove o primeiro recado da fila de recados do usuário.
+     *
+     * @return O conteúdo do primeiro recado, ou null se não houver recados.
      */
     public String lerRecado() {
-        return recados.poll(); // retorna null se estiver vazio
+        return recados.poll();
     }
 }

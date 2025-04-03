@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.jackut;
+package br.ufal.ic.p2.jackut.exceptions;
 
 /**
  * Exceção lançada quando não há recados para serem lidos.

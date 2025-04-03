@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.jackut;
+package br.ufal.ic.p2.jackut.exceptions;
 
 /**
  * Exceção lançada quando um atributo requerido não foi preenchido.

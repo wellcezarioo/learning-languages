@@ -1,5 +1,7 @@
 package br.ufal.ic.p2.jackut;
 
+import br.ufal.ic.p2.jackut.exceptions.AtributoNaoPreenchidoException;
+
 import java.io.Serializable;
 import java.util.*;
 

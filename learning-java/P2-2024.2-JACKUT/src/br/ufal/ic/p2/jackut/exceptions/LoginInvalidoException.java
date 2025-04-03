@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.jackut;
+package br.ufal.ic.p2.jackut.exceptions;
 
 /**
  * Exceção lançada quando um login inválido é fornecido.

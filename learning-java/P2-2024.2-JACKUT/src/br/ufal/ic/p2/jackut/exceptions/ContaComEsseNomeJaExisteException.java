@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.jackut;
+package br.ufal.ic.p2.jackut.exceptions;
 
 /**
  * Exceção lançada quando há uma tentativa de criar uma conta com um nome de usuário já existente.

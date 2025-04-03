@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.jackut;
 
+import br.ufal.ic.p2.jackut.exceptions.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

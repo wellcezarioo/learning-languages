@@ -1,5 +1,7 @@
 package br.ufal.ic.p2.jackut;
 
+import br.ufal.ic.p2.jackut.exceptions.*;
+
 /**
  * A classe Facade fornece uma interface simples para interagir com o sistema Jackut.
  * Ela expõe os métodos necessários para realizar ações no sistema, como criar usuários,

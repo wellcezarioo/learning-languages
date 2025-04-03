@@ -3,20 +3,20 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/Main.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/AtributoNaoPreenchidoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/ContaComEsseNomeJaExisteException.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/Facade.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/Jackut.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/LoginInvalidoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/LoginOuSenhaInvalidosException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/NaoHaRecadosException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/SenhaInvalidaException.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/Usuario.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/UsuarioJaEstaAdicionadoEsperandoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/UsuarioJaEstaAdicionadoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/UsuarioNaoCadastradoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/UsuarioNaoPodeAdicionarASiMesmoException.java" charset="ISO-8859-1" />
-    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/UsuarioNaoPodeEnviarRecadoParaSiMesmoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/AtributoNaoPreenchidoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/ContaComEsseNomeJaExisteException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/LoginInvalidoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/LoginOuSenhaInvalidosException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/NaoHaRecadosException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/SenhaInvalidaException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/UsuarioJaEstaAdicionadoEsperandoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/UsuarioJaEstaAdicionadoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/UsuarioNaoCadastradoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/UsuarioNaoPodeAdicionarASiMesmoException.java" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/src/br/ufal/ic/p2/jackut/exceptions/UsuarioNaoPodeEnviarRecadoParaSiMesmoException.java" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/tests/us1_1.txt" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/tests/us1_2.txt" charset="ISO-8859-1" />
     <file url="file://$PROJECT_DIR$/tests/us2_1.txt" charset="ISO-8859-1" />

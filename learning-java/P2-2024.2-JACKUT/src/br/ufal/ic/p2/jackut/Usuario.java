@@ -1,157 +1,92 @@
 package br.ufal.ic.p2.jackut;
 
 import br.ufal.ic.p2.jackut.exceptions.AtributoNaoPreenchidoException;
-
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Classe que representa um usuário no sistema Jackut.
- * Gerencia informações como login, senha, nome, atributos de perfil, amigos, recados e convites pendentes.
- */
 public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String login;
     private String senha;
     private String nome;
-    private List<String> amigos;
-    private Queue<String> recados;
-    private Map<String, String> atributos;
-    private Set<String> convitesPendentes;
 
-    /**
-     * Construtor da classe Usuario.
-     * Inicializa o usuário com um login, senha e nome.
-     *
-     * @param login O login do usuário.
-     * @param senha A senha do usuário.
-     * @param nome O nome do usuário.
-     */
+    private List<String> amigos          = new ArrayList<>();
+    private Queue<String> recados        = new LinkedList<>();
+    private Map<String,String> atributos = new HashMap<>();
+    private Set<String> convitesPendentes = new HashSet<>();
+
+    private Set<String> idolos    = new LinkedHashSet<>();
+    private Set<String> paqueras  = new LinkedHashSet<>();
+    private Set<String> inimigos  = new LinkedHashSet<>();
+    private Queue<String> mensagens = new LinkedList<>();
+
+    // Histórico de comunidades na ordem de ingresso
+    private Set<String> comunidadesParticipando = new LinkedHashSet<>();
+
     public Usuario(String login, String senha, String nome) {
         this.login = login;
         this.senha = senha;
-        this.nome = nome;
-        this.amigos = new ArrayList<>();
-        this.recados = new LinkedList<>();
-        this.atributos = new HashMap<>();
-        this.convitesPendentes = new HashSet<>();
+        this.nome  = nome;
     }
 
-    /**
-     * Verifica se a senha fornecida é válida para este usuário.
-     *
-     * @param senha A senha a ser verificada.
-     * @return Retorna true se a senha for válida, caso contrário, false.
-     */
-    public boolean verificarSenha(String senha) {
-        return this.senha.equals(senha);
-    }
+    public String getLogin() { return login; }
+    public String getNome()  { return nome; }
 
-    /**
-     * Edita ou cria um atributo no perfil do usuário.
-     *
-     * @param atributo O nome do atributo.
-     * @param valor O valor do atributo.
-     */
+    public boolean verificarSenha(String s) { return this.senha.equals(s); }
+
+    // Perfil
     public void editarAtributo(String atributo, String valor) {
-        if ("nome".equals(atributo)) {
-            this.nome = valor;
-        } else {
-            atributos.put(atributo, valor);
-        }
+        if ("nome".equals(atributo)) this.nome = valor;
+        else atributos.put(atributo, valor);
     }
-
-    /**
-     * Obtém o valor de um atributo do perfil do usuário.
-     *
-     * @param atributo O nome do atributo.
-     * @return O valor do atributo.
-     * @throws AtributoNaoPreenchidoException Se o atributo solicitado não foi preenchido.
-     */
     public String getAtributo(String atributo) {
-        if ("nome".equals(atributo)) {
-            return this.nome;
-        }
-        if (atributos.containsKey(atributo)) {
-            return atributos.get(atributo);
-        }
+        if ("nome".equals(atributo)) return nome;
+        if (atributos.containsKey(atributo)) return atributos.get(atributo);
         throw new AtributoNaoPreenchidoException();
     }
 
-    /**
-     * Verifica se o usuário é amigo de outro usuário.
-     *
-     * @param amigo O login do outro usuário.
-     * @return Retorna true se o usuário for amigo do outro, caso contrário, false.
-     */
-    public boolean ehAmigo(String amigo) {
-        return amigos.contains(amigo);
+    // Amigos
+    public boolean ehAmigo(String a) { return amigos.contains(a); }
+    public void confirmarAmizade(String a) {
+        if (!amigos.contains(a)) amigos.add(a);
     }
+    public List<String> getAmigos() { return amigos; }
+    public void adicionarConvite(String de) { convitesPendentes.add(de); }
+    public boolean temConvite(String de)    { return convitesPendentes.contains(de); }
+    public void removerConvite(String de)   { convitesPendentes.remove(de); }
 
-    /**
-     * Adiciona um amigo à lista de amigos do usuário.
-     *
-     * @param amigo O login do amigo a ser adicionado.
-     */
-    public void confirmarAmizade(String amigo) {
-        if (!amigos.contains(amigo)) {
-            amigos.add(amigo);
-        }
+    // Recados privados
+    public void receberRecado(String msg) { recados.add(msg); }
+    public String lerRecado()             { return recados.poll(); }
+    public void limparRecados()           { recados.clear(); }
+
+    // Mensagens de comunidade
+    public void receberMensagem(String msg) { mensagens.add(msg); }
+    public String lerMensagem()              { return mensagens.poll(); }
+    public void limparMensagens()            { mensagens.clear(); }
+
+    // Fãs/ídolos
+    public void adicionarIdolo(String idolo) { idolos.add(idolo); }
+    public boolean ehIdolo(String idolo)     { return idolos.contains(idolo); }
+
+    // Paqueras
+    public void adicionarPaquera(String p) { paqueras.add(p); }
+    public boolean ehPaquera(String p)     { return paqueras.contains(p); }
+    public Set<String> getPaqueras()       { return paqueras; }
+
+    // Inimizades
+    public void adicionarInimigo(String inimigo) { inimigos.add(inimigo); }
+    public boolean ehInimigo(String i)            { return inimigos.contains(i); }
+
+    // Comunidades
+    public void adicionarComunidadeParticipa(String nomeComunidade) {
+        comunidadesParticipando.add(nomeComunidade);
     }
-
-    /**
-     * Retorna a lista de amigos do usuário.
-     *
-     * @return A lista de amigos do usuário.
-     */
-    public List<String> getAmigos() {
-        return amigos;
+    public Set<String> getComunidadesParticipando() {
+        return comunidadesParticipando;
     }
-
-    /**
-     * Adiciona um convite de amizade à lista de convites pendentes do usuário.
-     *
-     * @param deUsuario O login do usuário que enviou o convite.
-     */
-    public void adicionarConvite(String deUsuario) {
-        convitesPendentes.add(deUsuario);
-    }
-
-    /**
-     * Remove um convite de amizade da lista de convites pendentes do usuário.
-     *
-     * @param deUsuario O login do usuário que enviou o convite.
-     */
-    public void removerConvite(String deUsuario) {
-        convitesPendentes.remove(deUsuario);
-    }
-
-    /**
-     * Verifica se o usuário tem um convite pendente de outro usuário.
-     *
-     * @param deUsuario O login do usuário que enviou o convite.
-     * @return Retorna true se o convite estiver pendente, caso contrário, false.
-     */
-    public boolean temConvite(String deUsuario) {
-        return convitesPendentes.contains(deUsuario);
-    }
-
-    /**
-     * Adiciona um recado à fila de recados do usuário.
-     *
-     * @param mensagem O conteúdo do recado.
-     */
-    public void receberRecado(String mensagem) {
-        recados.add(mensagem);
-    }
-
-    /**
-     * Retorna e remove o primeiro recado da fila de recados do usuário.
-     *
-     * @return O conteúdo do primeiro recado, ou null se não houver recados.
-     */
-    public String lerRecado() {
-        return recados.poll();
+    public void limparComunidadesParticipando(Collection<String> existentes) {
+        comunidadesParticipando.retainAll(existentes);
     }
 }
